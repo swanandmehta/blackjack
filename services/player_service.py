@@ -45,11 +45,13 @@ def update_player_bet(player_details, bet):
     try:
         if account_details.bal < bet:
             raise insuffciant_bal.InsuffciantBal
-    except insuffciant_bal.InsuffciantBal :
+    except insuffciant_bal.InsuffciantBal:
         print("Invalid user bal setting it to max available bal")
         player_details.bet = account_details.bal
+        account_details.bal = 0
     else:
         player_details.bet = bet
+        account_details.bal = account_details.bal - bet
 
 
 def place_bets(deck):

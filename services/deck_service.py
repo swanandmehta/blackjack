@@ -7,6 +7,7 @@ from core import print_services
 from services import player_service
 from services import card_service
 from services import dealer_service
+from services import account_services
 
 from entity import deck
 
@@ -66,10 +67,64 @@ def deal_cards(deck_details):
 def start_round(deck_details):
     deal_player(deck_details)
     deal_dealer(deck_details)
+    calculate_winner(deck_details)
+
+
+def calculate_winner(deck_details):
+    dealer = deck_details.get_dealer()
+    list_of_players = deck_details.get_players()
+
+    for (index, player) in enumerate(list_of_players):
+        if dealer.status == user_status.PlayerStatus.busted and player.status != user_status.PlayerStatus.busted:
+            account_services.update_normal_winning(player)
+            print_services.print_winner(player)
+
+        elif dealer.status != user_status.PlayerStatus.busted and player.status == user_status.PlayerStatus.busted:
+            account_services.update_normal_losing(player)
+            print_services.print_loser(player)
+        elif dealer.status != user_status.PlayerStatus.busted and player.status != user_status.PlayerStatus.busted:
+            if card_service.get_card_sum(dealer.cards) < card_service.get_card_sum(player.cards) < 21:
+                account_services.update_normal_winning(player)
+                print_services.print_winner(player)
+            elif card_service.get_card_sum(dealer.cards) < card_service.get_card_sum(player.cards) == 21:
+                account_services.update_blackjack_winning(player)
+                print_services.print_winner(player)
+            elif card_service.get_card_sum(dealer.cards) > card_service.get_card_sum(player.cards):
+                account_services.update_normal_losing(player)
+                print_services.print_loser(player)
+            else:
+                account_services.update_normal_drew(player)
+                print_services.print_drew(player)
 
 
 def deal_dealer(deck_details):
-    pass
+    dealer_service.reveal_dealers_hand(deck_details)
+
+    print_services.reveal_dealers_hand()
+    print_services.print_deck(deck_details)
+
+    dealer = deck_details.get_dealer()
+    list_of_players = deck_details.get_players()
+
+    for (index, player) in enumerate(list_of_players):
+        if player.status != user_status.PlayerStatus.busted and \
+                card_service.get_card_sum(player.cards) > card_service.get_card_sum(dealer.cards):
+            while True:
+                try:
+                    total = card_service.get_card_sum(dealer.cards)
+                    input_val = "S"
+
+                    if total < 17:
+                        input_val = "H"
+
+                    response = handle_input(input_val, deck_details, dealer)
+
+                    if response:
+                        break
+
+                except user_busted.UserBusted:
+                    print("Total is more then 21 dealer lost the game")
+                    dealer.status = user_status.PlayerStatus.busted
 
 
 def deal_player(deck_details):
@@ -88,16 +143,15 @@ def deal_player(deck_details):
                 print("Invalid Input please try again")
                 pass
             except user_busted.UserBusted:
-                print("You lost the game")
+                print("Total is more then 21 You lost the game")
                 player.status = user_status.PlayerStatus.busted
                 break
-
-    dealer_service.reveal_dealers_hand(deck_details)
 
 
 def handle_input(input_val, deck_details, player):
     if input_val == 'H':
         card = deck_details.get_card()
+        print_services.print_card(card, player)
         card.hidden = False
         player.cards.append(card)
         print_services.print_deck(deck_details)

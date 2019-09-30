@@ -40,3 +40,45 @@ def get_card_details(name, cards):
 
     return details
 
+
+def print_card(card, player):
+    card_details = "\n------------------------------------------------\n"
+    card_details = card_details + player.name + " "
+    card_details = card_details + "drew "
+    card_details = card_details + str(card.value) + " "
+    card_details = card_details + "of "
+    card_details = card_details + card.type.name + " "
+    card_details = card_details + "worth " + str(card.point) + " points.\n"
+    card_details = card_details + "------------------------------------------------\n"
+    print(card_details)
+
+
+def reveal_dealers_hand():
+    card_details = "\n------------------------------------------------\n"
+    card_details = card_details + "Dealer hand is revealed. \n"
+    card_details = card_details + "------------------------------------------------\n"
+    print(card_details)
+
+
+def print_winner(player):
+    card_details = "\n------------------------------------------------\n"
+    card_details = card_details + "Congratulation " + player.name + "! You have won the round\n"
+    card_details = card_details + "Updated bal : "+str(player.account.bal) + "\n"
+    card_details = card_details + "------------------------------------------------\n"
+    print(card_details)
+
+
+def print_loser(player):
+    card_details = "\n------------------------------------------------\n"
+    card_details = card_details + "Sorry " + player.name + "! You have lost the round\n"
+    card_details = card_details + "Updated bal : "+str(player.account.bal) + "\n"
+    card_details = card_details + "------------------------------------------------\n"
+    print(card_details)
+
+
+def print_drew(player):
+    card_details = "\n------------------------------------------------\n"
+    card_details = card_details + player.name + "Round is drew\n"
+    card_details = card_details + "Updated bal : "+str(player.account.bal) + "\n"
+    card_details = card_details + "------------------------------------------------\n"
+    print(card_details)

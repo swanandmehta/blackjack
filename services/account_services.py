@@ -16,3 +16,17 @@ def get_account(min_bal, max_bal):
     return account_details
 
 
+def update_normal_winning(player):
+    player.account.bal = player.account.bal + (player.bet * 1.5)
+
+
+def update_normal_losing(player):
+    player.account.bal = player.account.bal - player.bet
+
+
+def update_blackjack_winning(player):
+    player.account.bal = player.account.bal + (player.bet * 2)
+
+
+def update_normal_drew(player):
+    player.account.bal = player.account.bal + player.bet
